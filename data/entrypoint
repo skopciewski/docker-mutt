@@ -17,9 +17,9 @@ create_mail_user() {
   useradd -u ${user_id} -g ${group_id} -m -s /bin/bash muttuser
 }
 
-link_mutt_config() {
+copy_mutt_config() {
   local conf_dir="$1"
-  gosu muttuser bash -c "ln -s ${conf_dir} ~/.mutt"
+  gosu muttuser bash -c "cp -r ${conf_dir} ~/.mutt"
 }
 
 link_mutt_mails() {
@@ -30,6 +30,13 @@ link_mutt_mails() {
 link_mutt_abook() {
   local abook_dir="$1"
   gosu muttuser bash -c "ln -s ${abook_dir} ~/.abook"
+}
+
+configure_mutt() {
+  local mayaml_file=$1
+  gosu muttuser bash -c "mkdir -p ~/.mutt/accounts"
+  gosu muttuser bash -c "mayaml-mutt-init ${mayaml_file} ~/.mutt/init.muttrc"
+  gosu muttuser bash -c "mayaml-mutt-creds ${mayaml_file} ~/.mutt/accounts"
 }
 
 configure_vim() {
@@ -49,16 +56,18 @@ main() {
   local mutt_conf_dir=${MUTT_CONF_DIR:-/opt/mutt}
   local mutt_mails_dir=${MUTT_MAILS_DIR:-/mnt/mails}
   local mutt_abook_dir=${MUTT_ABOOK_DIR:-/mnt/abook}
+  local mayaml_file=${MAYAML_FILE}
 
   case "$1" in
   escto)
     shift; run_escape_to "$@";;
   *)
     create_mail_user "$mutt_user_id" "$mutt_group_id"
-    link_mutt_config "$mutt_conf_dir"
+    copy_mutt_config "$mutt_conf_dir"
     link_mutt_mails "$mutt_mails_dir"
     link_mutt_abook "$mutt_abook_dir"
     configure_vim
+    configure_mutt "$mayaml_file"
     run_mutt
   esac
 }

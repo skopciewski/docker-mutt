@@ -67,7 +67,7 @@ hdr_order date: to: cc: from: subject:  # and in this order
 set date_format = "%y-%m-%d %H:%m"
 #set index_format="%4C %Z %{%b %d} %-16.16L  %s"
 #set index_format="%2C | %Z [%d] %-30.30F (%-4.4c) %s"
-#set index_format = "[%Z]  %D  %-20.20F  %s"
+#set index_format= "[%Z]  %D  %-20.20F  %s"
 set index_format="%4C [%Z]%?X?%2X*&   ? %s %*  (%D) %-30.30L "
 set sort = threads                         # like gmail
 # set sort_aux = reverse-last-date-received  # like gmail
@@ -79,11 +79,11 @@ set sort = threads                         # like gmail
 source ~/.mutt/csk.muttrc
 
 # Account Settings -----------------------------------
-set realname = "SKopciewski"
-#set my_profile_file = "account_chooser"
+set my_profile_file = "current_acc"
+set smtp_authenticators="digest-md5:cram-md5:gssapi:login"
 
-#source `~/.mutt/accounts_loader.sh`
-#source ~/.mutt/accounts/default
+source ~/.mutt/init.muttrc
+source ~/.mutt/accounts/$my_profile_file
 
 # ============================================================================================
 set query_command= "abook --mutt-query '%s'"
@@ -101,13 +101,12 @@ bind editor "^T" complete
 bind pager <Up> previous-line
 bind pager <Down> next-line
 
-#macro index,pager r "<pipe-message>~/.mutt/account_chooser.sh $my_profile_file<enter>\
-#<enter-command>source ~/.mutt/accounts/$my_profile_file<enter>\
-#<reply>" "Reply using specific account"
-#macro compose 'v' "<edit-from>^Umy_account_<complete>" "Select from"
+macro index,pager r "<pipe-message>~/.mutt/account_chooser.sh $my_profile_file<enter>\
+<enter-command>source ~/.mutt/accounts/$my_profile_file<enter>\
+<reply>" "Reply using specific account"
+macro compose 'v' "<edit-from>^Umy_account_<complete>" "Select from"
 macro index,pager "a" "<pipe-message>abook --add-email-quiet<enter>" "add the sender address to abook"
 macro index,pager "A" "<shell-escape>abook<enter>" "launch abook"
-#macro index,pager "<f5>" "<shell-escape>getmailall.sh<enter>" "get new emails"
 macro pager \cb <pipe-entry>'urlview'<enter> 'Follow links with urlview'
 
 folder-hook . 'macro index,pager "<space>" "<display-message>"'

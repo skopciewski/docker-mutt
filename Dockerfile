@@ -11,7 +11,17 @@ RUN curl -o /usr/local/bin/gosu -fsSL \
 # Install all stuff and cleanup
 RUN dnf -y install dnf-plugins-core \
     && dnf -y copr enable flatcap/neomutt \
-    && dnf -y install neomutt ruby langpacks-${lang} vim abook elinks git \
+    && dnf -y install \
+      abook \
+      cyrus-sasl-gssapi \
+      cyrus-sasl-md5 \
+      cyrus-sasl-plain \
+      elinks \
+      git \
+      langpacks-${lang} \
+      neomutt \
+      ruby \
+      vim \
     && rm -rf /var/cache/dnf/*
 
 # Set locale
@@ -40,6 +50,7 @@ ENV MUTT_GROUP_ID=1000
 ENV MUTT_CONF_DIR=/opt/mutt
 ENV MUTT_MAILS_DIR=/mnt/mails
 ENV MUTT_ABOOK_DIR=/mnt/abook
+ENV MAYAML_FILE=/mnt/mayaml.yml
 
 # mutt config
 RUN mkdir -p ${MUTT_CONF_DIR}
