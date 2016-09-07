@@ -20,6 +20,7 @@ RUN dnf -y install dnf-plugins-core \
       git \
       langpacks-${lang} \
       neomutt \
+      procmail \
       ruby \
       vim \
     && rm -rf /var/cache/dnf/*
@@ -33,7 +34,7 @@ ENV LC_ALL=${locale}
 ENV TERM=screen-256color
 
 # Install gems
-RUN gem install -N mayaml-mutt \
+RUN gem install -N mayaml-mutt -v '~> 3' \
     && rm -rf /usr/local/share/gems/cache/*
 
 # vim config
