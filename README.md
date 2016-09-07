@@ -5,7 +5,7 @@
 The container provides the mutt instance for managing mounted mailbox. Accounts configuration is generated from mayaml.yml file (see: [Mayaml project][mayaml_url]).
 
 ```bash
-  docker run -it --rm --name mailgrabber \
+  docker run -it --rm --name mutt \
     -v /path/to/mayaml.yml:/mnt/mayaml.yml \
     -v /path/to/maildir:/mnt/mails \
     -v /path/to/abook:/mnt/abook \
@@ -17,7 +17,7 @@ The container provides the mutt instance for managing mounted mailbox. Accounts 
 If you want to execute other command than `mutt`, run docker container with `escto` as first param:
 
 ```bash
-  docker run -it --rm --name mailgrabber \
+  docker run -it --rm --name mutt \
     -v /path/to/mayaml.yml:/mnt/mayaml.yml \
     -v /path/to/maildir:/mnt/mails \
     -v /path/to/abook:/mnt/abook \
