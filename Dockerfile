@@ -2,6 +2,7 @@ FROM fedora:24
 
 ARG lang=pl
 ARG locale=pl_PL.utf8
+ARG timezone=Europe/Warsaw
 
 # grab gosu for easy step-down from root
 RUN curl -o /usr/local/bin/gosu -fsSL \
@@ -29,6 +30,7 @@ RUN dnf -y install dnf-plugins-core \
 RUN echo "LANG=${locale}" > /etc/locale.conf
 RUN echo "export LANG=${locale}" >> /etc/skel/.bash_profile
 RUN echo "export TERM=screen-256color" >> /etc/skel/.bash_profile
+RUN /usr/bin/ln -s -f /usr/share/zoneinfo/${timezone} /etc/localtime
 ENV LANG=${locale}
 ENV LC_ALL=${locale}
 ENV TERM=screen-256color
