@@ -49,7 +49,7 @@ unset mark_old           # read/new is good enough for me
 set sidebar_divider_char = ' │ '
 set sidebar_visible = yes
 set sidebar_width   = 24
-set sidebar_format = "%B%*  %S"
+set sidebar_format = "%B%* %?N?%N/ ?%S"
 color sidebar_new color221 color233
 macro index "<PageUp>" "<sidebar-prev><sidebar-open>"
 macro index "<PageDown>" "<sidebar-next><sidebar-open>"
