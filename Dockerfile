@@ -53,16 +53,19 @@ ENV MUTT_GROUP_ID=1000
 ENV MUTT_CONF_DIR=/opt/mutt
 ENV MUTT_MAILS_DIR=/mnt/mails
 ENV MUTT_ABOOK_DIR=/mnt/abook
+ENV MUTT_HOST_DIR=/mnt/host
 ENV MAYAML_FILE=/mnt/mayaml.yml
 
 # mutt config
 RUN mkdir -p ${MUTT_CONF_DIR}
 COPY data/mutt ${MUTT_CONF_DIR}
 
+# mutt host dir
+RUN mkdir -p ${MUTT_HOST_DIR}
+
 # entrypoint
 COPY data/entrypoint /entrypoint
 RUN chmod 755 /entrypoint
 
-VOLUME ["${MUTT_MAILS_DIR}", "%{MUTT_ABOOK_DIR}"]
 ENTRYPOINT ["/entrypoint"]
 CMD ["all"]
