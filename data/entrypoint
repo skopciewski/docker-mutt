@@ -47,7 +47,8 @@ configure_vim() {
 }
 
 run_mutt() {
-  gosu muttuser mutt
+  local host_dir="$1"
+  gosu muttuser bash -c "cd ${host_dir} && mutt"
 }
 
 main() {
@@ -56,6 +57,7 @@ main() {
   local mutt_conf_dir=${MUTT_CONF_DIR:-/opt/mutt}
   local mutt_mails_dir=${MUTT_MAILS_DIR:-/mnt/mails}
   local mutt_abook_dir=${MUTT_ABOOK_DIR:-/mnt/abook}
+  local mutt_host_dir=${MUTT_HOST_DIR:-/mnt/host}
   local mayaml_file=${MAYAML_FILE}
 
   case "$1" in
@@ -68,7 +70,7 @@ main() {
     link_mutt_abook "$mutt_abook_dir"
     configure_vim
     configure_mutt "$mayaml_file"
-    run_mutt
+    run_mutt "$mutt_host_dir"
   esac
 }
 
