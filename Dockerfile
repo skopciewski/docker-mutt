@@ -11,7 +11,13 @@ RUN curl -o /usr/local/bin/gosu -fsSL \
 
 # download vim dics
 RUN mkdir -p /opt/vim/spell && \
-      curl -o /opt/vim/spell/${lang}.utf-8.spl -fsSL "ftp://ftp.vim.org/pub/vim/runtime/spell/${lang}.utf-8.spl"
+    curl -o /opt/vim/spell/${lang}.utf-8.spl -fsSL \
+      "ftp://ftp.vim.org/pub/vim/runtime/spell/${lang}.utf-8.spl"
+
+# download extract_url.pl
+RUN curl -o /usr/local/sbin/extract_url.pl -fsSL \
+      "https://raw.githubusercontent.com/m3m0ryh0l3/extracturl/master/extract_url.pl" \
+    && chmod +x /usr/local/sbin/extract_url.pl
 
 # Install all stuff and cleanup
 RUN dnf -y install dnf-plugins-core \
@@ -26,6 +32,10 @@ RUN dnf -y install dnf-plugins-core \
       git \
       langpacks-${lang} \
       neomutt \
+      perl-Env \
+      perl-HTML-Parser \
+      perl-MIME-tools \
+      perl-URI-Find \
       procmail \
       ruby \
       vim \
@@ -52,7 +62,6 @@ RUN mkdir -p /root/.vim/undo /root/.vim/swap \
     && vim --not-a-term -u /tmp/vimrc +VundleInstall +qall &> /dev/null \
     && rm /tmp/vimrc \
     && ln -sf /opt/vim/spell /root/.vim/spell
-
 
 # env
 ENV MUTT_USER_ID=1000
