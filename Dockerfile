@@ -1,4 +1,4 @@
-FROM fedora:24
+FROM fedora:25
 
 ARG lang=pl
 ARG locale=pl_PL.utf8
@@ -9,9 +9,14 @@ RUN curl -o /usr/local/bin/gosu -fsSL \
       "https://github.com/tianon/gosu/releases/download/1.9/gosu-amd64" \
     && chmod +x /usr/local/bin/gosu 
 
+# download vim dics
+RUN mkdir -p /opt/vim/spell && \
+      curl -o /opt/vim/spell/${lang}.utf-8.spl -fsSL "ftp://ftp.vim.org/pub/vim/runtime/spell/${lang}.utf-8.spl"
+
 # Install all stuff and cleanup
 RUN dnf -y install dnf-plugins-core \
     && dnf -y copr enable flatcap/neomutt \
+    && dnf -y remove vim-minimal \
     && dnf -y install \
       abook \
       cyrus-sasl-gssapi \
@@ -45,7 +50,9 @@ RUN mkdir -p /root/.vim/undo /root/.vim/swap \
     && git clone https://github.com/gmarik/Vundle.vim.git /root/.vim/bundle/Vundle.vim \
     && sed -e '/^colorscheme/s/.*/"\\1/' /root/.vimrc > /tmp/vimrc \
     && vim --not-a-term -u /tmp/vimrc +VundleInstall +qall &> /dev/null \
-    && rm /tmp/vimrc
+    && rm /tmp/vimrc \
+    && ln -sf /opt/vim/spell /root/.vim/spell
+
 
 # env
 ENV MUTT_USER_ID=1000
