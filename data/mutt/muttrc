@@ -65,7 +65,7 @@ unhdr_order *                           # some distros order things by default
 hdr_order date: to: cc: from: subject:  # and in this order
 
 # Index View Options ---------------------------------
-set date_format = "%y-%m-%d %H:%m"
+set date_format = "%y-%m-%d %H:%M"
 #set index_format="%4C %Z %{%b %d} %-16.16L  %s"
 #set index_format="%2C | %Z [%d] %-30.30F (%-4.4c) %s"
 #set index_format= "[%Z]  %D  %-20.20F  %s"
