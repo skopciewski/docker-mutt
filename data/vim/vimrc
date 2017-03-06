@@ -15,29 +15,21 @@ Plugin 'gmarik/Vundle.vim'
 
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'tomasr/molokai'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'kien/ctrlp.vim'
 Plugin 'mileszs/ack.vim'
+Plugin 'godlygeek/tabular'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-repeat'
-Plugin 'godlygeek/tabular'
-Plugin 'gabrielelana/vim-markdown'
-Plugin 'gorodinskiy/vim-coloresque'
 Plugin 'tpope/vim-unimpaired'
-Plugin 'scrooloose/syntastic'
-Plugin 'elzr/vim-json'
 Plugin 'tpope/vim-endwise'
 Plugin 'tpope/vim-abolish'
-Plugin 'tpope/vim-fugitive'
-Plugin 'slim-template/vim-slim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'ervandew/supertab'
 Plugin 'vim-scripts/DeleteTrailingWhitespace'
 Plugin 'vim-scripts/YankRing.vim'
-
+Plugin 'reedes/vim-pencil'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -92,8 +84,6 @@ set number
 set list    " Display unprintable characters
 set listchars=tab:▸\ ,trail:•,extends:»,precedes:«
 " Local settings
-autocmd Filetype php,javascript setlocal ts=4 sts=4 sw=4
-autocmd Filetype make setlocal ts=8 sts=8 sw=8
 autocmd Filetype mkd setlocal cc=+0
 " Search settings
 set ignorecase
@@ -175,12 +165,3 @@ nnoremap <C-y> :YRShow<cr>
 let g:yankring_history_dir = '$HOME/.vim'
 let g:yankring_manual_clipboard_check = 0
 
-" For Syntastic
-let g:syntastic_always_populate_loc_list = 0
-let g:syntastic_enable_signs=1
-let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'active_filetypes': [],
-                           \ 'passive_filetypes': ['tex', 'c', 'scss', 'html', 'scala'] }
-
-" For commentary
-autocmd FileType php set commentstring=//\ %s
