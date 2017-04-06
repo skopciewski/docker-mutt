@@ -51,7 +51,7 @@ ENV LC_ALL=${locale}
 ENV TERM=screen-256color
 
 # Install gems
-RUN gem install -N mayaml-mutt -v '~> 3' \
+RUN gem install -N mayaml-mutt -v '~> 4' \
     && rm -rf /usr/local/share/gems/cache/*
 
 # vim config
