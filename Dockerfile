@@ -30,6 +30,7 @@ RUN dnf -y install dnf-plugins-core \
       cyrus-sasl-plain \
       elinks \
       git \
+      glibc-langpack-${lang} \
       langpacks-${lang} \
       neomutt \
       perl-Env \
