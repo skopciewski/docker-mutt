@@ -48,7 +48,7 @@ configure_vim() {
 
 run_mutt() {
   local host_dir="$1"
-  gosu muttuser bash -c "cd ${host_dir} && mutt"
+  gosu muttuser bash -c "cd ${host_dir} && neomutt"
 }
 
 main() {
