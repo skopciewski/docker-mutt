@@ -1,4 +1,4 @@
-FROM fedora:25
+FROM fedora:28
 
 ARG lang=pl
 ARG locale=pl_PL.utf8
