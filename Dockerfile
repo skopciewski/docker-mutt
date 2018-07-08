@@ -1,7 +1,7 @@
-FROM fedora:28
+FROM base/archlinux
 
 ARG lang=pl
-ARG locale=pl_PL.utf8
+ARG locale=pl_PL.UTF-8
 ARG timezone=Europe/Warsaw
 
 # grab gosu for easy step-down from root
@@ -20,29 +20,30 @@ RUN curl -o /usr/local/sbin/extract_url.pl -fsSL \
     && chmod +x /usr/local/sbin/extract_url.pl
 
 # Install all stuff and cleanup
-RUN dnf -y install dnf-plugins-core \
-    && dnf -y copr enable flatcap/neomutt \
-    && dnf -y remove vim-minimal \
-    && dnf -y install \
+RUN pacman -Sy \
+    && pacman -S --noconfirm \
       abook \
       cyrus-sasl-gssapi \
-      cyrus-sasl-md5 \
-      cyrus-sasl-plain \
+      # cyrus-sasl-md5 \
+      # cyrus-sasl-plain \
       elinks \
       git \
-      glibc-langpack-${lang} \
-      langpacks-${lang} \
+      # glibc-langpack-${lang} \
+      # langpacks-${lang} \
       neomutt \
-      perl-Env \
-      perl-HTML-Parser \
-      perl-MIME-tools \
-      perl-URI-Find \
+      # perl-Env \
+      perl-html-parser \
+      perl-mime-tools \
+      perl-uri \
       procmail \
       ruby \
       vim \
-    && rm -rf /var/cache/dnf/*
+    # Remove anything left in temp.
+    && rm -r /var/lib/pacman/sync/*
+
 
 # Set locale
+RUN sed -i -e "s/.*pl_PL\(.*\)/pl_PL\1/" /etc/locale.gen && locale-gen
 RUN echo "LANG=${locale}" > /etc/locale.conf
 RUN echo "export LANG=${locale}" >> /etc/skel/.bash_profile
 RUN echo "export TERM=screen-256color" >> /etc/skel/.bash_profile
@@ -52,9 +53,7 @@ ENV LC_ALL=${locale}
 ENV TERM=screen-256color
 
 # Install gems
-COPY data/gemrc /root/.gemrc
-RUN gem install -N mayaml-mutt -v '~> 4' \
-    && rm -rf /usr/local/share/gems/cache/*
+RUN gem install --no-user-install -n /usr/local/bin -N mayaml-mutt -v '~> 4'
 
 # vim config
 COPY data/vim/vimrc /root/.vimrc
