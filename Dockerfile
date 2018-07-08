@@ -52,6 +52,7 @@ ENV LC_ALL=${locale}
 ENV TERM=screen-256color
 
 # Install gems
+COPY data/gemrc /root/.gemrc
 RUN gem install -N mayaml-mutt -v '~> 4' \
     && rm -rf /usr/local/share/gems/cache/*
 
