@@ -24,21 +24,34 @@ RUN pacman -Sy \
     && pacman -S --noconfirm \
       abook \
       cyrus-sasl-gssapi \
-      # cyrus-sasl-md5 \
-      # cyrus-sasl-plain \
       elinks \
       git \
-      # glibc-langpack-${lang} \
-      # langpacks-${lang} \
       neomutt \
-      # perl-Env \
       perl-html-parser \
       perl-mime-tools \
       perl-uri \
       procmail \
       ruby \
       vim \
-    # Remove anything left in temp.
+    && pacman -S --noconfirm \
+      m4 \
+      autoconf \
+      automake \
+      patch \
+      wget \
+      sudo \
+      binutils \
+      gcc \
+      make \
+      fakeroot \
+    && useradd builduser -m \
+    && passwd -d builduser \
+    && printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers \
+    && sudo -u builduser bash -c 'cd ~ && wget https://aur.archlinux.org/cgit/aur.git/snapshot/urlview.tar.gz && tar xzf urlview.tar.gz && cd urlview && makepkg -is --noconfirm' \
+    && userdel builduser \
+    && rm -rf /home/builduser \
+    && pacman --noconfirm -Rs m4 autoconf automake patch wget sudo binutils gcc make fakeroot \
+    && pacman -Scc --noconfirm \
     && rm -r /var/lib/pacman/sync/*
 
 
