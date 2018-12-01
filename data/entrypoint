@@ -10,53 +10,19 @@ run_escape_to() {
   exec "$@"
 }
 
-create_mail_user() {
-  local user_id="$1"
-  local group_id="$2"
-  groupadd -g ${group_id} muttuser
-  useradd -u ${user_id} -g ${group_id} -m -s /bin/bash muttuser
-}
-
-copy_mutt_config() {
-  local conf_dir="$1"
-  gosu muttuser bash -c "cp -r ${conf_dir} ~/.mutt"
-}
-
-link_mutt_mails() {
-  local mails_dir="$1"
-  gosu muttuser bash -c "ln -s ${mails_dir} ~/.mails"
-}
-
-link_mutt_abook() {
-  local abook_dir="$1"
-  gosu muttuser bash -c "ln -s ${abook_dir} ~/.abook"
-}
-
 configure_mutt() {
   local mayaml_file=$1
-  gosu muttuser bash -c "mkdir -p ~/.mutt/accounts"
-  gosu muttuser bash -c "mayaml-mutt-init ${mayaml_file} ~/.mutt/init.muttrc"
-  gosu muttuser bash -c "mayaml-mutt-creds ${mayaml_file} ~/.mutt/accounts"
-}
-
-configure_vim() {
-  cp -r /root/.vim /home/muttuser/.vim
-  cp /root/.vimrc /home/muttuser/.vimrc
-  chown -R muttuser:muttuser /home/muttuser/.vim
-  chown muttuser:muttuser /home/muttuser/.vimrc
+  mkdir -p ~/.mutt/accounts
+  mayaml-mutt-init ${mayaml_file} ~/.mutt/init.muttrc
+  mayaml-mutt-creds ${mayaml_file} ~/.mutt/accounts
 }
 
 run_mutt() {
   local host_dir="$1"
-  gosu muttuser bash -c "cd ${host_dir} && neomutt"
+  cd ${host_dir} && neomutt
 }
 
 main() {
-  local mutt_user_id=${MUTT_USER_ID:-1000}
-  local mutt_group_id=${MUTT_GROUP_ID:-1000}
-  local mutt_conf_dir=${MUTT_CONF_DIR:-/opt/mutt}
-  local mutt_mails_dir=${MUTT_MAILS_DIR:-/mnt/mails}
-  local mutt_abook_dir=${MUTT_ABOOK_DIR:-/mnt/abook}
   local mutt_host_dir=${MUTT_HOST_DIR:-/mnt/host}
   local mayaml_file=${MAYAML_FILE}
 
@@ -64,11 +30,6 @@ main() {
   escto)
     shift; run_escape_to "$@";;
   *)
-    create_mail_user "$mutt_user_id" "$mutt_group_id"
-    copy_mutt_config "$mutt_conf_dir"
-    link_mutt_mails "$mutt_mails_dir"
-    link_mutt_abook "$mutt_abook_dir"
-    configure_vim
     configure_mutt "$mayaml_file"
     run_mutt "$mutt_host_dir"
   esac

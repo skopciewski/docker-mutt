@@ -1,13 +1,32 @@
-FROM base/archlinux
+FROM bitnami/minideb:stretch
 
 ARG lang=pl
 ARG locale=pl_PL.UTF-8
 ARG timezone=Europe/Warsaw
+ARG uid=1000
+ARG gid=1000
 
-# grab gosu for easy step-down from root
-RUN curl -o /usr/local/bin/gosu -fsSL \
-      "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
-    && chmod +x /usr/local/bin/gosu 
+RUN echo "deb http://http.us.debian.org/debian testing main non-free contrib" > /etc/apt/sources.list.d/testing.list \
+    && echo "deb-src http://http.us.debian.org/debian testing main non-free contrib" >> /etc/apt/sources.list.d/testing.list
+
+RUN install_packages \
+      abook \
+      curl \
+      elinks \
+      git \
+      less \
+      libenv-path-perl \
+      libhtml-parser-perl \
+      libmime-tools-perl \
+      libsasl2-modules-gssapi-mit \
+      liburi-perl \
+      locales \
+      neomutt \
+      procmail \
+      ruby \
+      urlscan \
+      urlview \
+      vim 
 
 # download vim dics
 RUN mkdir -p /opt/vim/spell \
@@ -19,83 +38,53 @@ RUN curl -o /usr/local/sbin/extract_url.pl -fsSL \
       "https://raw.githubusercontent.com/m3m0ryh0l3/extracturl/master/extract_url.pl" \
     && chmod +x /usr/local/sbin/extract_url.pl
 
-# Install all stuff and cleanup
-RUN pacman -Sy \
-    && pacman -S --noconfirm \
-      abook \
-      cyrus-sasl-gssapi \
-      elinks \
-      git \
-      neomutt \
-      perl-html-parser \
-      perl-mime-tools \
-      perl-uri \
-      procmail \
-      ruby \
-      vim \
-    && pacman -S --noconfirm \
-      m4 \
-      autoconf \
-      automake \
-      patch \
-      wget \
-      sudo \
-      binutils \
-      gcc \
-      make \
-      fakeroot \
-    && useradd builduser -m \
-    && passwd -d builduser \
-    && printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers \
-    && sudo -u builduser bash -c 'cd ~ && wget https://aur.archlinux.org/cgit/aur.git/snapshot/urlview.tar.gz && tar xzf urlview.tar.gz && cd urlview && makepkg -is --noconfirm' \
-    && userdel builduser \
-    && rm -rf /home/builduser \
-    && pacman --noconfirm -Rs m4 autoconf automake patch wget sudo binutils gcc make fakeroot \
-    && pacman -Scc --noconfirm \
-    && rm -r /var/lib/pacman/sync/*
-
-
 # Set locale
 RUN sed -i -e "s/.*pl_PL\(.*\)/pl_PL\1/" /etc/locale.gen && locale-gen
-RUN echo "LANG=${locale}" > /etc/locale.conf
-RUN echo "export LANG=${locale}" >> /etc/skel/.bash_profile
-RUN echo "export TERM=screen-256color" >> /etc/skel/.bash_profile
-RUN /usr/bin/ln -s -f /usr/share/zoneinfo/${timezone} /etc/localtime
+RUN echo "export LANG=${locale}" >> /etc/profile
+RUN echo "export LANG=${locale}" >> /etc/skel/.profile
+RUN echo "export TERM=screen-256color" >> /etc/skel/.profile
+RUN ln -s -f /usr/share/zoneinfo/${timezone} /etc/localtime
 ENV LANG=${locale}
 ENV LC_ALL=${locale}
 ENV TERM=screen-256color
 
+# Create user
+RUN addgroup --gid ${gid} muttuser \
+  && adduser --home /home/muttuser --disabled-password --uid ${uid} --ingroup muttuser --shell /bin/bash --gecos "" muttuser
+
 # Install gems
 RUN gem install --no-user-install -n /usr/local/bin -N mayaml-mutt -v '~> 4'
 
-# vim config
-COPY data/vim/vimrc /root/.vimrc
-RUN mkdir -p /root/.vim/undo /root/.vim/swap \
-    && git clone https://github.com/gmarik/Vundle.vim.git /root/.vim/bundle/Vundle.vim \
-    && sed -e '/^colorscheme/s/.*/"\\1/' /root/.vimrc > /tmp/vimrc \
-    && vim --not-a-term -u /tmp/vimrc +VundleInstall +qall &> /dev/null \
-    && rm /tmp/vimrc \
-    && ln -sf /opt/vim/spell /root/.vim/spell
-
 # env
-ENV MUTT_USER_ID=1000
-ENV MUTT_GROUP_ID=1000
-ENV MUTT_CONF_DIR=/opt/mutt
 ENV MUTT_MAILS_DIR=/mnt/mails
 ENV MUTT_ABOOK_DIR=/mnt/abook
 ENV MUTT_HOST_DIR=/mnt/host
 ENV MAYAML_FILE=/mnt/mayaml.yml
 
-# mutt config
-RUN mkdir -p ${MUTT_CONF_DIR}
-COPY data/mutt ${MUTT_CONF_DIR}
-
-# mutt host dir
-RUN mkdir -p ${MUTT_HOST_DIR}
+# mutt dirs
+RUN mkdir -p ${MUTT_HOST_DIR} \
+  && mkdir -p ${MUTT_ABOOK_DIR} \
+  && mkdir -p ${MUTT_MAILS_DIR}
 
 # entrypoint
 COPY data/entrypoint /entrypoint
 RUN chmod 755 /entrypoint
+
+USER muttuser
+
+# vim config
+COPY --chown=muttuser:muttuser data/vim/vimrc /home/muttuser/.vimrc
+RUN mkdir -p /home/muttuser/.vim/undo /home/muttuser/.vim/swap \
+  && git clone https://github.com/gmarik/Vundle.vim.git /home/muttuser/.vim/bundle/Vundle.vim \
+  && sed -e '/^colorscheme/s/.*/"\\1/' /home/muttuser/.vimrc > /tmp/vimrc \
+  && /bin/bash -c 'vim --not-a-term -u /tmp/vimrc +VundleInstall +qall &> /dev/null' \
+  && rm /tmp/vimrc \
+  && ln -sf /opt/vim/spell /home/muttuser/.vim/spell
+
+# mutt config
+COPY --chown=muttuser:muttuser data/mutt /home/muttuser/.mutt
+RUN ln -sf ${MUTT_MAILS_DIR} /home/muttuser/.mails \
+  && ln -sf ${MUTT_ABOOK_DIR} /home/muttuser/.abook
 
 ENTRYPOINT ["/entrypoint"]
 CMD ["all"]
