@@ -109,12 +109,11 @@ macro index,pager r "<pipe-message>~/.mutt/account_chooser.sh $my_profile_file<e
 macro compose 'v' "<edit-from>^Umy_account_<complete>" "Select from"
 macro index,pager "a" "<pipe-message>abook --add-email-quiet<enter>" "add the sender address to abook"
 macro index,pager "A" "<shell-escape>abook<enter>" "launch abook"
-macro pager \cb <pipe-entry>'urlview'<enter> 'Follow links with urlview'
-#macro pager \cv <pipe-entry>'extract_url.pl | less'<enter> 'Follow links with extract_url'
-macro pager \cv "<enter-command>set my_pdsave=\$pipe_decode<enter>\
-<enter-command>unset pipe_decode<enter>\
-<pipe-message>extract_url.pl | less<enter>\
-<enter-command>set pipe_decode=\$my_pdsave<enter>" "get URLs"
+macro pager \cb <pipe-entry>'urlscan'<enter> 'Follow links with urlview'
+#macro pager \cv "<enter-command>set my_pdsave=\$pipe_decode<enter>\
+#<enter-command>unset pipe_decode<enter>\
+#<pipe-message>extract_url.pl | less<enter>\
+#<enter-command>set pipe_decode=\$my_pdsave<enter>" "get URLs"
 
 folder-hook . 'macro index,pager "<space>" "<display-message>"'
 folder-hook . 'macro index,pager d "<save-message>=trash<enter>"'
