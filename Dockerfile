@@ -3,16 +3,21 @@ FROM archlinux:base-devel as build_aur
 ## Create user
 RUN groupadd --gid 1010 builder \
   && useradd -m --home-dir /home/builder --uid 1010 --gid builder --shell /bin/bash --comment "" builder
-  
+
 RUN pacman --sync --noconfirm --refresh \
   && pacman --sync --noconfirm \
-    git 
+    git opensmtpd
 
 USER builder
 
 RUN git clone https://aur.archlinux.org/abook.git /home/builder/abook \
   && cd /home/builder/abook \
   && makepkg -src
+
+RUN git clone https://aur.archlinux.org/procmail.git /home/builder/procmail \
+  && cd /home/builder/procmail \
+  && makepkg -src \
+  && ls -la
 
 # --------------------------------------------------------------------------------------------
 
@@ -25,6 +30,7 @@ ARG uid=1000
 ARG gid=1000
 
 COPY --from=build_aur /home/builder/abook/abook-0.6.1-7-x86_64.pkg.tar.zst /tmp/abook-0.6.1-7-x86_64.pkg.tar.zst
+COPY --from=build_aur /home/builder/procmail/procmail-3.22-10-x86_64.pkg.tar.zst /tmp/procmail-3.22-10-x86_64.pkg.tar.zst
 
 RUN pacman --sync --noconfirm --refresh \
  && sed -i -e '/locale/d' -e '/lang/d' /etc/pacman.conf \
@@ -35,12 +41,12 @@ RUN pacman --sync --noconfirm --refresh \
     glibc \
     less \
     neomutt \
-    procmail \
     ruby \
     urlscan \
     vim \
  && pacman --noconfirm -U /tmp/abook-0.6.1-7-x86_64.pkg.tar.zst \
- && rm -rf /var/lib/pacman 
+ && pacman --noconfirm -U /tmp/procmail-3.22-10-x86_64.pkg.tar.zst \
+ && rm -rf /var/lib/pacman
 
 # download vim dics
 RUN mkdir -p /opt/vim/spell \
