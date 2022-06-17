@@ -69,7 +69,7 @@ RUN groupadd --gid ${gid} muttuser \
   && useradd -m --home-dir /home/muttuser --uid ${uid} --gid muttuser --shell /bin/bash --comment "" muttuser
 
 # Install gems
-RUN gem install --no-user-install -n /usr/local/bin -N mayaml-mutt -v '~> 4'
+RUN gem install --no-user-install -n /usr/local/bin -N mayaml-mutt -v '~> 4.1'
 
 # env
 ENV MUTT_MAILS_DIR=/mnt/mails
