@@ -54,7 +54,6 @@ RUN mkdir -p /opt/vim/spell \
       "ftp://ftp.vim.org/pub/vim/runtime/spell/${lang}.utf-8.spl"
 
 # Set locale
-RUN cp /etc/locale.gen.pacnew /etc/locale.gen
 RUN sed -i -e "s/.*pl_PL\(.*\)/pl_PL\1/" /etc/locale.gen && locale-gen
 RUN echo "LANG=${locale}" > /etc/locale.conf
 RUN echo "export LANG=${locale}" >> /etc/skel/.profile
