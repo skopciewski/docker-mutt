@@ -28,6 +28,7 @@ RUN apk add --no-cache --update \
   make \
   neomutt \
   ruby \
+  urlscan \
   vim
 
 # Install gems
